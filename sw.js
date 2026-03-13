@@ -1,10 +1,10 @@
 const CACHE_NAME = 'onyx-strength-v4';
 
 const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './assets/index-DGb1oU8I.js'
+  'https://shufflse.github.io/onyxstrength/',
+  'https://shufflse.github.io/onyxstrength/index.html',
+  'https://shufflse.github.io/onyxstrength/manifest.json',
+  'https://shufflse.github.io/onyxstrength/assets/index-DGb1oU8I.js'
 ];
 
 self.addEventListener('install', event => {
