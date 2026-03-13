@@ -4,7 +4,7 @@ const urlsToCache = [
   'https://shufflse.github.io/onyxstrength/',
   'https://shufflse.github.io/onyxstrength/index.html',
   'https://shufflse.github.io/onyxstrength/manifest.json',
-  'https://shufflse.github.io/onyxstrength/assets/index-pOTYJCfE.js'
+  'https://shufflse.github.io/onyxstrength/assets/index-C8zmbmCp.js'
 ];
 
 self.addEventListener('install', event => {
