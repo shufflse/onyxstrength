@@ -5,7 +5,6 @@ const urlsToCache = [
   './index.html',
   './manifest.json',
   './assets/index-DGb1oU8I.js'
-  // Remove the Tailwind CDN URL
 ];
 
 self.addEventListener('install', event => {
