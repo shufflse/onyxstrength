@@ -1,4 +1,5 @@
-const CACHE_NAME = 'onyx-strength-v1';
+const CACHE_VERSION = '26.03.17';
+const CACHE_NAME = `onyx-strength-${CACHE_VERSION}`;
 
 // All the files and CDNs your app needs to run offline
 const urlsToCache = [
@@ -16,15 +17,26 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache');
+        console.log('Opened cache', CACHE_NAME);
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Activate and claim clients
+// Activate and claim clients, also clean up old caches
 self.addEventListener('activate', event => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => clients.claim())
+  );
 });
 
 // Timer management
@@ -34,7 +46,6 @@ const timers = new Map();
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'START_REST') {
     const { timerId, duration } = event.data;
-    // Set a timeout to show notification
     const timeoutId = setTimeout(() => {
       self.registration.showNotification('Rest finished!', {
         body: 'Time for your next set.',
@@ -55,6 +66,8 @@ self.addEventListener('message', event => {
       clearTimeout(timeoutId);
       timers.delete(timerId);
     }
+  } else if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
 
@@ -62,7 +75,6 @@ self.addEventListener('message', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   if (event.action === 'open' || !event.action) {
-    // Open or focus the app
     event.waitUntil(
       clients.matchAll({ type: 'window' }).then(clientList => {
         if (clientList.length > 0) {
