@@ -6,9 +6,6 @@ const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  'https://cdn.tailwindcss.com/3.4.17',
-  'https://unpkg.com/react@18/umd/react.production.min.js',
-  'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js'
 ];
 
 // Install the service worker and cache assets
