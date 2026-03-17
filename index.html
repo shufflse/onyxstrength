@@ -9,6 +9,37 @@
     <meta name="theme-color" content="#000000" />
     <link rel="manifest" href="./manifest.json" />
     <title>Onyx Strength</title>
+    <script>
+      (function() {
+
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('portrait').catch(function(error) {
+            console.log('Orientation lock failed:', error);
+          });
+        } 
+
+        const style = document.createElement('style');
+        style.textContent = `
+          input, textarea, select, button {
+            font-size: 16px !important;
+          }
+        `;
+        document.head.appendChild(style);
+
+        const viewportMeta = document.querySelector('meta[name="viewport"]');
+        if (viewportMeta) {
+          const originalContent = viewportMeta.content;
+
+          viewportMeta.setAttribute = function() {}; // no-op (optional, but may break other scripts)
+
+          setInterval(() => {
+            if (viewportMeta.content !== originalContent) {
+              viewportMeta.content = originalContent;
+            }
+          }, 500);
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -32,7 +63,7 @@
         input[type="number"]::-webkit-inner-spin-button { opacity: 0.5; }
         select { min-width: 0; }
     </style>
-  <script type="module" crossorigin src="./assets/index-C8zmbmCp.js"></script>
+  <script type="module" crossorigin src="/assets/index-COqOfkwV.js"></script>
 </head>
 <body class="bg-dark text-gray-100 font-sans antialiased selection:bg-accent selection:text-white overflow-x-hidden">
     <div id="root"></div>
