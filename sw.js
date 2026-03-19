@@ -37,8 +37,8 @@ self.addEventListener('message', event => {
     const timeoutId = setTimeout(() => {
       self.registration.showNotification('Rest finished!', {
         body: 'Time for your next set.',
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
+        icon: './icon-192.png',
+        badge: './icon-192.png',
         vibrate: [200, 100, 200],
         tag: 'rest-timer',
         renotify: true,
