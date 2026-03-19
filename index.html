@@ -1,84 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="./icon-192.png" /> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/png" href="./icon-192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="theme-color" content="#000000" />
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet" />
     <title>Onyx Strength</title>
-    <script>
-      (function() {
-
-        if (screen.orientation && screen.orientation.lock) {
-          screen.orientation.lock('portrait').catch(function(error) {
-            console.log('Orientation lock failed:', error);
-          });
-        } 
-
-        const style = document.createElement('style');
-        style.textContent = `
-          input, textarea, select, button {
-            font-size: 16px !important;
-          }
-        `;
-        document.head.appendChild(style);
-
-        const viewportMeta = document.querySelector('meta[name="viewport"]');
-        if (viewportMeta) {
-          const originalContent = viewportMeta.content;
-
-          viewportMeta.setAttribute = function() {}; // no-op (optional, but may break other scripts)
-
-          setInterval(() => {
-            if (viewportMeta.content !== originalContent) {
-              viewportMeta.content = originalContent;
-            }
-          }, 500);
-        }
-      })();
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        dark: '#000000',
-                        card: '#1C1C1E',
-                        accent: '#0A84FF',
-                        success: '#30D158',
-                        danger: '#FF453A'
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        input[type="number"]::-webkit-inner-spin-button { opacity: 0.5; }
-        select { min-width: 0; }
-    </style>
-  <script type="module" crossorigin src="./assets/index-Dl_kuQn6.js"></script>
-</head>
-<body class="bg-dark text-gray-100 font-sans antialiased selection:bg-accent selection:text-white overflow-x-hidden">
+    <script type="module" crossorigin src="/assets/index-C_pEmRSF.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BjcT9GnA.css">
+  </head>
+  <body class="bg-dark">
     <div id="root"></div>
+    
+    <!-- Service Worker Registration -->
     <script>
-        // Service Worker registration (unchanged)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registered: ', registration.scope);
-                    }, err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registered: ', registration.scope);
+            })
+            .catch(error => {
+              console.log('ServiceWorker registration failed: ', error);
             });
-        }
+        });
+      }
     </script>
-</body>
+  </body>
 </html>
