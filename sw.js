@@ -7,7 +7,7 @@ const urlsToCache = [
   '/version.js'
 ];
 
-// Active timers storage
+// Active timers storage - persists in memory while SW is active
 let activeTimers = new Map();
 
 // Install event - cache static assets
@@ -58,6 +58,7 @@ self.addEventListener('message', (event) => {
     }
 
     const now = Date.now();
+    // Use provided endTime or calculate from duration
     const targetEndTime = endTime || (now + duration * 1000);
     const remainingMs = targetEndTime - now;
 
@@ -84,15 +85,27 @@ self.addEventListener('message', (event) => {
             }
           });
           activeTimers.delete(timerId);
+          
+          // Notify all clients that timer completed
+          self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+            clients.forEach(client => {
+              client.postMessage({
+                type: 'TIMER_COMPLETED',
+                timerId
+              });
+            });
+          });
         }, remainingMs)
       });
 
       // Confirm timer started
-      event.source?.postMessage({
-        type: 'TIMER_STARTED',
-        timerId,
-        endTime: targetEndTime
-      });
+      if (event.source) {
+        event.source.postMessage({
+          type: 'TIMER_STARTED',
+          timerId,
+          endTime: targetEndTime
+        });
+      }
     }
   }
 
@@ -101,24 +114,27 @@ self.addEventListener('message', (event) => {
       clearTimeout(activeTimers.get(timerId).timeout);
       activeTimers.delete(timerId);
     }
-    event.source?.postMessage({
-      type: 'TIMER_CANCELLED',
-      timerId
-    });
+    if (event.source) {
+      event.source.postMessage({
+        type: 'TIMER_CANCELLED',
+        timerId
+      });
+    }
   }
 
   if (type === 'GET_TIMER_STATUS') {
     const timer = activeTimers.get(timerId);
-    if (timer) {
+    if (timer && event.source) {
       const remaining = Math.max(0, Math.ceil((timer.endTime - Date.now()) / 1000));
-      event.source?.postMessage({
+      event.source.postMessage({
         type: 'TIMER_STATUS',
         timerId,
         remaining,
-        active: remaining > 0
+        active: remaining > 0,
+        endTime: timer.endTime
       });
-    } else {
-      event.source?.postMessage({
+    } else if (event.source) {
+      event.source.postMessage({
         type: 'TIMER_STATUS',
         timerId,
         remaining: 0,
@@ -143,16 +159,16 @@ self.addEventListener('message', (event) => {
     const workoutKey = key || 'currentWorkout';
     caches.open(CACHE_NAME).then(cache => {
       cache.match(`/${workoutKey}`).then(response => {
-        if (response) {
+        if (response && event.source) {
           response.json().then(data => {
-            event.source?.postMessage({
+            event.source.postMessage({
               type: 'CACHED_WORKOUT_DATA',
               key: workoutKey,
               data
             });
           });
-        } else {
-          event.source?.postMessage({
+        } else if (event.source) {
+          event.source.postMessage({
             type: 'CACHED_WORKOUT_DATA',
             key: workoutKey,
             data: null
@@ -194,23 +210,5 @@ self.addEventListener('notificationclick', (event) => {
         return self.clients.openWindow('/');
       })
     );
-  }
-});
-
-// Periodic sync for timer (if supported)
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'timer-sync') {
-    // Check active timers and send notifications
-    activeTimers.forEach((timer, timerId) => {
-      const remaining = timer.endTime - Date.now();
-      if (remaining <= 0) {
-        self.registration.showNotification('Onyx Strength', {
-          body: 'Rest time is up!',
-          icon: '/icons/icon-192x192.png',
-          tag: timerId
-        });
-        activeTimers.delete(timerId);
-      }
-    });
   }
 });
